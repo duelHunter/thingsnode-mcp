@@ -1,0 +1,41 @@
+# General spring parameters
+server:
+  # Bind address. Default to 0.0.0.0 so containerized app is reachable from host/docker network.
+  address: "${HTTP_BIND_ADDRESS:0.0.0.0}"
+  port: "${HTTP_BIND_PORT:8000}"
+
+spring:
+  main:
+    banner-mode: off
+    web-application-type: servlet
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: thingsboard-mcp-server
+        version: 1.0.0
+        # The WebMVC starter autoconfigures WebMVC SSE transport
+        # Also enables STDIO so the same binary can be launched in either mode
+        stdio: "${SPRING_AI_MCP_SERVER_STDIO:false}" # true to use STDIO mode
+        sse-endpoint: "${SPRING_AI_MCP_SERVER_SSE_ENDPOINT:/sse}"
+        sse-message-endpoint: "${SPRING_AI_MCP_SERVER_SSE_MESSAGE_ENDPOINT:/mcp/message}"
+        type: sync
+        tool-change-notification: true
+      cors:
+        allowed-origins: "${SPRING_AI_MCP_CORS_ALLOWED_ORIGINS:*}" # comma-separated list
+
+logging:
+  level:
+    root: info
+    io.modelcontextprotocol.server.McpAsyncServer: error
+    org.springframework.ai.mcp: info
+    org.thingsboard.ai.mcp.server: info
+  pattern:
+    console: "${LOGGING_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} | %-5level | %logger{1.} | %msg%n}"
+
+# ThingsBoard auth parameters
+thingsboard:
+  url: "${THINGSBOARD_URL:}"
+  username: "${THINGSBOARD_USERNAME:}"
+  password: "${THINGSBOARD_PASSWORD:}"
+  login-interval-seconds: "${THINGSBOARD_LOGIN_INTERVAL_SECONDS:1800}"
